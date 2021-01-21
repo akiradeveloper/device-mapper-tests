@@ -28,7 +28,7 @@ impl <T: DMStack> Stack for T {
         self.dm().path()
     }
 }
-fn reload(stack: impl DMStack, table: &impl DMTable) -> impl DMStack {
+pub fn reload(stack: impl DMStack, table: &impl DMTable) -> impl DMStack {
     stack.dm().suspend();
     stack.dm().reload(&table.line());
     stack.dm().resume();

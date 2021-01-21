@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["open",""]],"mod":[["pattern",""]],"struct":[["OpenState",""]]});

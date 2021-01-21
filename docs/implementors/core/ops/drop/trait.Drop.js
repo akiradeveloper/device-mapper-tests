@@ -1,3 +1,0 @@
-(function() {var implementors = {};
-implementors["device_mapper_tests"] = [{"text":"impl Drop for Luks","synthetic":false,"types":[]},{"text":"impl Drop for XFS","synthetic":false,"types":[]},{"text":"impl Drop for OpenState","synthetic":false,"types":[]},{"text":"impl Drop for EmptyDMStack","synthetic":false,"types":[]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
