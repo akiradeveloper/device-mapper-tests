@@ -6,7 +6,6 @@ use std::path::PathBuf;
 
 pub mod linear;
 pub mod flakey;
-pub mod writeboost;
 pub mod luks;
 
 struct RawBlk {
