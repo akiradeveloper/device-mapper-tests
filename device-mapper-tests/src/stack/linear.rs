@@ -1,4 +1,4 @@
-use crate::{Sector, DMTable, DMStack, DMState, DMStackDecorator};
+use crate::{Sector, DMTable, DMStack, DMStackDecorator};
 
 pub struct Table {
     pub backing_dev: String,

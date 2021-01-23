@@ -3,7 +3,7 @@
 mod sector;
 mod env;
 mod rand_name;
-mod dm;
+pub mod dm;
 pub mod stack;
 pub mod fs;
 pub mod io;
@@ -11,7 +11,6 @@ pub mod kernel;
 pub mod blkdev;
 
 use std::time::Duration;
-use dm::DMState;
 use rand_name::rand_name;
 pub use sector::Sector;
 pub use env::env;
@@ -21,7 +20,7 @@ pub trait Stack {
     fn path(&self) -> String;
 }
 pub trait DMStack: Stack {
-    fn dm(&self) -> &DMState;
+    fn dm(&self) -> &dm::State;
 }
 impl <T: DMStack> Stack for T {
     fn path(&self) -> String {
@@ -35,10 +34,10 @@ pub fn reload(stack: impl DMStack, table: &impl DMTable) -> impl DMStack {
     stack
 }
 pub struct EmptyDMStack {
-    dm: DMState,
+    dm: dm::State,
 }
 impl DMStack for EmptyDMStack {
-    fn dm(&self) -> &DMState {
+    fn dm(&self) -> &dm::State {
         &self.dm
     }
 }
@@ -50,7 +49,7 @@ impl Drop for EmptyDMStack {
 impl EmptyDMStack {
     pub fn new() -> Self {
         let name = rand_name();
-        let dm = DMState::new(name);
+        let dm = dm::State::new(name);
         dm.create();
         EmptyDMStack {
             dm,
@@ -61,7 +60,7 @@ pub trait DMStackDecorator: DMStack {
     fn delegate(&self) -> &DMStack;
 }
 impl <T: DMStackDecorator> DMStack for T {
-    fn dm(&self) -> &DMState {
+    fn dm(&self) -> &dm::State {
         self.delegate().dm()
     }
 }

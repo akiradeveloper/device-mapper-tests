@@ -1,5 +1,4 @@
-use crate::{Stack, DMState, DMStack, Sector, EmptyDMStack};
-use anyhow::Result;
+use crate::{Stack, DMStack, Sector, EmptyDMStack};
 
 use std::fs;
 

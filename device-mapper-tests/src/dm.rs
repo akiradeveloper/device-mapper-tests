@@ -44,12 +44,12 @@ impl FromStr for Status {
         Ok(Status { start, len, target, args, })
     }
 }
-pub struct DMState {
+pub struct State {
     name: String,
 }
-impl DMState {
+impl State {
     pub fn new(name: String) -> Self {
-        DMState {
+        State {
             name,
         }
     }

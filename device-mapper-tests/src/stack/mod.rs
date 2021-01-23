@@ -1,6 +1,6 @@
 // #![feature(specialization)]
 
-use crate::{DMTable, Stack, DMStack, DMState, DMStackDecorator};
+use crate::{DMTable, Stack, DMStack, DMStackDecorator};
 use crate::Sector;
 use std::path::PathBuf;
 
