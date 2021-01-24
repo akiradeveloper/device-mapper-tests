@@ -47,3 +47,13 @@ impl Drop for OpenState {
 pub fn open(s: &impl Stack) -> OpenState {
     OpenState::open(&s.path())
 }
+
+pub fn test_blk_rw(s: &impl Stack, offset: Sector, cnt: Sector) {
+    let rw = open(s);
+    let sz = cnt.bytes() as usize;
+    let wbuf = vec![1; sz];
+    rw.write(&wbuf, offset, cnt);
+    let mut rbuf = vec![0;512];
+    rw.read(&mut rbuf, offset, cnt);
+    assert_eq!(rbuf, wbuf);
+}

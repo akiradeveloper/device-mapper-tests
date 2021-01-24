@@ -3,12 +3,12 @@ use device_mapper_tests::*;
 use std::collections::{HashMap, VecDeque};
 use cmd_lib::run_cmd;
 
-pub fn sweep_caches(cache_dev: impl Stack) {
+pub fn sweep_caches(cache_dev: &impl Stack) {
     let path = cache_dev.path();
     run_cmd!(dd status=none if=/dev/zero of=$path oflag=direct bs=512 count=1);
 }
 #[derive(Default)]
-struct Options {
+pub struct Options {
     m: HashMap<&'static str, u64>,
 }
 impl Options {
@@ -60,10 +60,10 @@ impl Options {
         }
     }
 }
-struct Table {
-    backing_dev: String,
-    cache_dev: String,
-    options: Options,
+pub struct Table {
+    pub backing_dev: String,
+    pub cache_dev: String,
+    pub options: Options,
 }
 impl DMTable for Table {
     fn line(&self) -> String {
@@ -75,7 +75,7 @@ impl DMTable for Table {
     }
 }
 #[derive(Hash, Eq)]
-struct StatKey {
+pub struct StatKey {
     pub write: bool,
     pub hit: bool,
     pub on_buffer: bool,
@@ -101,17 +101,17 @@ impl StatKey {
         }
     }
 }
-struct Status {
-    cursor_pos: u64,
-    nr_cache_blocks: u64,
-    nr_segments: u64,
-    current_id: u64,
-    last_flushed_id: u64,
-    last_writeback_id: u64,
-    nr_dirty_cache_blocks: u64,
-    stat: HashMap<StatKey, u64>,
-    nr_partial_flushed: u64,
-    options: HashMap<String, u64>,
+pub struct Status {
+    pub cursor_pos: u64,
+    pub nr_cache_blocks: u64,
+    pub nr_segments: u64,
+    pub current_id: u64,
+    pub last_flushed_id: u64,
+    pub last_writeback_id: u64,
+    pub nr_dirty_cache_blocks: u64,
+    pub stat: HashMap<StatKey, u64>,
+    pub nr_partial_flushed: u64,
+    pub options: HashMap<String, u64>,
 }
 fn pop_int(q: &mut VecDeque<String>) -> u64 {
     use std::str::FromStr;
@@ -156,9 +156,22 @@ impl Status {
         }
     }
 }
-struct Writeboost {
+pub struct Writeboost {
     delegate: Box<DMStack>,
     table: Table,
+}
+impl Writeboost {
+    pub fn create(table: Table) -> Self {
+        let dm = EmptyDMStack::new();
+        Self::new(dm, table)
+    }
+    pub fn new<S: DMStack + 'static>(s: S, table: Table) -> Self {
+        let s = crate::reload(s, &table);
+        Self {
+            delegate: Box::new(s),
+            table,
+        }
+    }
 }
 impl DMStackDecorator for Writeboost {
     fn delegate(&self) -> &DMStack {
@@ -166,13 +179,13 @@ impl DMStackDecorator for Writeboost {
     }
 }
 impl Writeboost {
-    fn drop_caches(&self) {
+    pub fn drop_caches(&self) {
         self.dm().message("drop_caches");
     }
-    fn clear_stat(&self) {
+    pub fn clear_stat(&self) {
         self.dm().message("clear_stat");
     }
-    fn status(&self) -> Status {
+    pub fn status(&self) -> Status {
         Status::from(self.dm().status())
     }
 }

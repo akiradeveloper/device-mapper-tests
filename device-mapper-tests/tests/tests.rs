@@ -28,19 +28,11 @@ fn test_blkdev_size() {
     let sz = blkdev::getsize(&dev.path());
     assert_eq!(sz, Sector(127));
 }
-fn test_blk_rw(s: &impl Stack) {
-    let rw = open(s);
-    let wbuf = vec![1;512];
-    rw.write(&wbuf, Sector::KB(1), Sector(1));
-    let mut rbuf = vec![0;512];
-    rw.read(&mut rbuf, Sector::KB(1), Sector(1));
-    assert_eq!(rbuf, wbuf);
-}
 #[test]
 fn test_mem_rw() {
     let mut env = env();
     let dev = env.alloc_device(Sector::MB(1));
-    test_blk_rw(&dev)
+    io::test_blk_rw(&dev, Sector::KB(1), Sector(1));
 }
 #[test]
 fn test_pattern_io() {
@@ -71,7 +63,7 @@ fn test_linear() {
     let linear = Linear::new(dm, tab);
     let sz = blkdev::getsize(&linear.path()); 
     assert_eq!(sz, Sector::MB(40));
-    test_blk_rw(&linear);
+    io::test_blk_rw(&linear, Sector::KB(1), Sector(1));
 }
 #[test]
 fn test_luks_prerequisite() {
@@ -84,7 +76,7 @@ fn test_luks() {
     let dev = env.alloc_device(Sector::MB(100));
     Luks::format(&dev);
     let luks = Luks::new(&dev);
-    test_blk_rw(&luks);
+    io::test_blk_rw(&luks, Sector::KB(1), Sector(1));
 }
 #[test]
 fn test_flakey() {
@@ -99,7 +91,7 @@ fn test_flakey() {
     };
     let flakey = Flakey::new(dm, tab);
     // Should finish in 8 seconds
-    test_blk_rw(&flakey);
+    io::test_blk_rw(&flakey, Sector::KB(1), Sector(1));
 }
 #[test]
 fn test_xfs_prerequisite() {
