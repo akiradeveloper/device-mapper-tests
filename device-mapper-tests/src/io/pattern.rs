@@ -47,12 +47,12 @@ impl PatternIO {
                         l
                     },
                     Write(l) => {
-                        let buf = vec![0xFF; l.bytes() as usize];
+                        let buf = super::buf(&vec![0xFF; l.bytes() as usize]);
                         rw.write(&buf, cur, *l);
                         l
                     },
                     Read(l) => {
-                        let mut buf = vec![0; l.bytes() as usize];
+                        let mut buf = super::buf(&vec![0; l.bytes() as usize]);
                         rw.read(&mut buf, cur, *l);
                         l
                     }

@@ -134,7 +134,7 @@ pub struct DevicePool {
 }
 impl DevicePool {
     pub fn new(path: &str) -> Self {
-        let sz = blkdev::getsize(&path);
+        let sz = blkdev::get_size(&path);
         Self {
             backing_dev: path.to_owned(),
             pool: Arc::new(Mutex::new(Pool::new(Sector::GB(0), sz)))

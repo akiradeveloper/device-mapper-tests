@@ -67,7 +67,7 @@ pub struct Table {
 }
 impl DMTable for Table {
     fn line(&self) -> String {
-        let sz = blkdev::getsize(&self.backing_dev).sectors();
+        let sz = blkdev::get_size(&self.backing_dev).sectors();
         let backing_dev = &self.backing_dev;
         let cache_dev = &self.cache_dev;
         let option_line = self.options.mk_line_repr();

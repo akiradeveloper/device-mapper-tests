@@ -8,7 +8,7 @@ pub struct Table {
 }
 impl DMTable for Table {
     fn line(&self) -> String {
-        let sz = crate::blkdev::getsize(&self.backing_dev).sectors();
+        let sz = crate::blkdev::get_size(&self.backing_dev).sectors();
         // Starting from the time the table is loaded, the device is available for <up interval> seconds,
         // then exhibits unreliable behaviour for <down interval> seconds, and then this cycle repeats.
         format!("0 {} flakey {} 0 {} {}", sz, self.backing_dev, self.up_interval_sec, self.down_interval_sec)

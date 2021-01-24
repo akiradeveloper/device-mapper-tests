@@ -13,7 +13,7 @@ fn test_rw() {
         options: Options::default(),
     };
     let dev = Writeboost::create(table);
-    io::test_blk_rw(&dev, Sector(0), Sector::KB(1));
+    io::test_blk_rw(&dev, Sector(0), Sector(1));
     io::test_blk_rw(&dev, Sector(0), Sector::MB(50));
     io::test_blk_rw(&dev, Sector(0), Sector::MB(200));
 }
@@ -53,7 +53,7 @@ fn test_stat_purity() {
         assert_eq!(v, 0);
     }
 
-    let mut buf = vec![0; 4096];
+    let mut buf = io::buf(&vec![0; 4096]);
     rw.write(&buf, Sector(0), Sector::KB(4));
     let stat = dev.status().stat;
     let k1 = StatKey {

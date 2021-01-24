@@ -25,7 +25,7 @@ fn test_mem_pool() {
 fn test_blkdev_size() {
     let mut env = env();
     let dev = env.alloc_device(Sector(127));
-    let sz = blkdev::getsize(&dev.path());
+    let sz = blkdev::get_size(&dev.path());
     assert_eq!(sz, Sector(127));
 }
 #[test]
@@ -61,7 +61,7 @@ fn test_linear() {
         len: Sector::MB(40),
     };
     let linear = Linear::new(dm, tab);
-    let sz = blkdev::getsize(&linear.path()); 
+    let sz = blkdev::get_size(&linear.path()); 
     assert_eq!(sz, Sector::MB(40));
     io::test_blk_rw(&linear, Sector::KB(1), Sector(1));
 }

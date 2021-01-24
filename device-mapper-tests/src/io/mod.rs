@@ -11,6 +11,8 @@ pub struct OpenState {
 }
 impl OpenState {
     fn open(path: &str) -> Self {
+        assert_eq!(crate::blkdev::get_blocksize(path), 512);
+
         let flags = libc::O_RDWR | libc::O_DIRECT;
         let path = CString::new(path).unwrap();
         let fd = unsafe { libc::open64(path.as_ptr(), flags) };
@@ -48,12 +50,25 @@ pub fn open(s: &impl Stack) -> OpenState {
     OpenState::open(&s.path())
 }
 
+// Allocate buffer which is 512 bytes aligned.
+// In direct IO, the buffer must be aligned in block size.
+pub fn buf(src: &[u8]) -> Vec<u8> {
+    use std::alloc::{alloc, Layout};
+
+    let sz = src.len();
+    let layout = Layout::from_size_align(sz, 512).unwrap();
+    let p = unsafe { alloc(layout) };
+    let mut buf = unsafe { Vec::from_raw_parts(p, sz, sz) };
+    buf.copy_from_slice(&src);
+    buf
+}
+
 pub fn test_blk_rw(s: &impl Stack, offset: Sector, cnt: Sector) {
     let rw = open(s);
     let sz = cnt.bytes() as usize;
-    let wbuf = vec![1; sz];
+    let wbuf = buf(&vec![1; sz]);
     rw.write(&wbuf, offset, cnt);
-    let mut rbuf = vec![0; sz];
+    let mut rbuf = buf(&vec![0; sz]);
     rw.read(&mut rbuf, offset, cnt);
     assert_eq!(rbuf, wbuf);
 }

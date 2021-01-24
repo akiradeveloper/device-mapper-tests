@@ -10,7 +10,8 @@ impl MemBlk {
         let path = env.alloc();
         run_cmd!(dd status=none if=/dev/zero of=$path bs=1M count=$mb).unwrap();
         let loop_device = run_fun!(losetup -f).unwrap();
-        run_cmd!(losetup $loop_device $path).unwrap();
+        run_cmd!(losetup --sector-size=512 $loop_device $path).unwrap();
+        dbg!(run_fun!(blockdev --getss $loop_device));
         Self {
             path,
             loop_device,
