@@ -89,7 +89,7 @@ impl PartialEq for StatKey {
     }
 }
 impl StatKey {
-    fn from_bits(mask: u8) -> Self {
+    pub fn from_bits(mask: u8) -> Self {
         let on = |shift: u8| {
             (mask & (1<<shift)) != 0
         };

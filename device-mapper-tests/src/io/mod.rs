@@ -53,7 +53,7 @@ pub fn test_blk_rw(s: &impl Stack, offset: Sector, cnt: Sector) {
     let sz = cnt.bytes() as usize;
     let wbuf = vec![1; sz];
     rw.write(&wbuf, offset, cnt);
-    let mut rbuf = vec![0;512];
+    let mut rbuf = vec![0; sz];
     rw.read(&mut rbuf, offset, cnt);
     assert_eq!(rbuf, wbuf);
 }
