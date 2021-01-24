@@ -29,9 +29,13 @@ fn test_stat() {
         cache_dev: fast.path(),
         options: Options::default(),
     };
-    let dev = Writeboost::create(table);
 
     // After create
+    let dev = Writeboost::create(table);
+    // We need to clear stat here because Device creation is followed
+    // by some read I/O maybe to check the successful creation.
+    dev.clear_stat();
+
     let stat0 = dev.status().stat;
     for i in 0..16 {
         let k = StatKey::from_bits(i);
@@ -39,7 +43,8 @@ fn test_stat() {
         assert_eq!(v, 0);
     }
 
-    // After open
+    // After open:
+    // Opening the device on the other hand doesn't do any side effects.
     let rw = open(&dev);
     let stat1 = dev.status().stat;
     for i in 0..16 {
