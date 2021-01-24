@@ -19,7 +19,7 @@ fn test_rw() {
 }
 
 #[test]
-fn test_stat() {
+fn test_stat_purity() {
     let mut env = env();
     let slow = env.alloc_device(Sector::MB(500));
     let fast = env.alloc_device(Sector::MB(100));
@@ -36,20 +36,57 @@ fn test_stat() {
     // by some read I/O maybe to check the successful creation.
     dev.clear_stat();
 
-    let stat0 = dev.status().stat;
+    let stat = dev.status().stat;
     for i in 0..16 {
         let k = StatKey::from_bits(i);
-        let v = *stat0.get(&k).unwrap();
+        let v = *stat.get(&k).unwrap();
         assert_eq!(v, 0);
     }
 
     // After open:
     // Opening the device on the other hand doesn't do any side effects.
     let rw = open(&dev);
-    let stat1 = dev.status().stat;
+    let stat = dev.status().stat;
     for i in 0..16 {
         let k = StatKey::from_bits(i);
-        let v = *stat1.get(&k).unwrap();
+        let v = *stat.get(&k).unwrap();
         assert_eq!(v, 0);
+    }
+
+    let mut buf = vec![0; 4096];
+    rw.write(&buf, Sector(0), Sector::KB(4));
+    let stat = dev.status().stat;
+    let k1 = StatKey {
+        write: true,
+        hit: false,
+        on_buffer: false,
+        full_size: true,
+    };
+    for i in 0..16 {
+        let k = StatKey::from_bits(i);
+        let v = *stat.get(&k).unwrap();
+        if k == k1 {
+            assert_eq!(v, 1);
+        } else {
+            assert_eq!(v, 0);
+        }
+    }
+
+    rw.read(&mut buf, Sector(0), Sector::KB(4));
+    let stat = dev.status().stat;
+    let k2 = StatKey {
+        write: false,
+        hit: true,
+        on_buffer: true,
+        full_size: true,
+    };
+    for i in 0..16 {
+        let k = StatKey::from_bits(i);
+        let v = *stat.get(&k).unwrap();
+        if k == k1 || k == k2 {
+            assert_eq!(v, 1);
+        } else {
+            assert_eq!(v, 0);
+        }
     }
 }

@@ -11,7 +11,7 @@ pub struct OpenState {
 }
 impl OpenState {
     fn open(path: &str) -> Self {
-        let flags = libc::O_RDWR;
+        let flags = libc::O_RDWR | libc::O_DIRECT;
         let path = CString::new(path).unwrap();
         let fd = unsafe { libc::open64(path.as_ptr(), flags) };
         if fd < 0 {
