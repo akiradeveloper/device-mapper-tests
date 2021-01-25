@@ -38,7 +38,7 @@ impl Options {
         self
     }
     pub fn write_around_mode(mut self) -> Self {
-        self.m.insert("write_around_cache", 1);
+        self.m.insert("write_around_mode", 1);
         self
     }
     pub fn nr_read_cache_cells(mut self, x: u64) -> Self {
@@ -46,16 +46,17 @@ impl Options {
         self.m.insert("nr_read_cache_cells", x);
         self
     }
-    pub fn mk_line_repr(&self) -> String {
+    fn mk_line_repr(&self) -> String {
         let n = self.m.len();
         if n == 0 {
             "".to_owned()
         } else {
-            let mut s = format!("{}", n*2);
+            let mut s = format!(" {}", n*2);
             for (k, v) in &self.m {
                 let kv = format!(" {} {}", k, v);
                 s.push_str(&kv);
             }
+            dbg!(&s);
             s
         }
     }
