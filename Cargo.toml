@@ -2,5 +2,5 @@
 members = [
     "device-mapper-tests",
     "writeboost-tests",
-    "writeboost-tools-tests"
+    "wb-command-tests"
 ]
