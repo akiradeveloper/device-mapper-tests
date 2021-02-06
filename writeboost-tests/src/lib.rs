@@ -75,7 +75,7 @@ impl DMTable for Table {
         format!("0 {} writeboost {} {}{}", sz, backing_dev, cache_dev, option_line)
     }
 }
-#[derive(Hash, Eq)]
+#[derive(Hash, Eq, Debug)]
 pub struct StatKey {
     pub write: bool,
     pub hit: bool,
@@ -180,6 +180,12 @@ impl DMStackDecorator for Writeboost {
     }
 }
 impl Writeboost {
+    // Drop all transient data in the ram buffer to the caching device.
+    // suspend + resume is used dm-wide to stabilize remaining transient data.
+    pub fn drop_transient(&self) {
+        self.dm().suspend();
+        self.dm().resume();
+    }
     pub fn drop_caches(&self) {
         self.dm().message("drop_caches");
     }
