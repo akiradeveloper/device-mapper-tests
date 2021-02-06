@@ -1,8 +1,7 @@
 use writeboost_tests::*;
 use device_mapper_tests::*;
 
-// Be careful!
-// drop_transient changes the stat as well as dm-create.
+// - drop_transient changes the stat as well as dm-create.
 #[test]
 fn test_stat_drop_transient() {
     let mut env = env();
@@ -24,7 +23,7 @@ fn test_stat_drop_transient() {
     assert_ne!(st1, st2);
 }
 
-// drop_caches won't change the stat.
+// - drop_caches won't change the stat.
 #[test]
 fn test_stat_drop_caches() {
     let mut env = env();
@@ -46,8 +45,8 @@ fn test_stat_drop_caches() {
     assert_eq!(st1, st2);
 }
 
-// Be careful!
-// dm-create changes the stat.
+// - dm-create changes the stat.
+// - open doesn't.
 #[test]
 fn test_stat_purity() {
     let mut env = env();
@@ -60,10 +59,7 @@ fn test_stat_purity() {
         options: Options::default(),
     };
 
-    // After create
     let dev = Writeboost::create(table);
-    // We need to clear stat here because Device creation is followed
-    // by some read I/O maybe to check the successful creation.
     dev.clear_stat();
 
     let stat = dev.status().stat;
@@ -73,8 +69,6 @@ fn test_stat_purity() {
         assert_eq!(v, 0);
     }
 
-    // After open:
-    // Opening the device on the other hand doesn't do any side effects.
     let rw = open(&dev);
     let stat = dev.status().stat;
     for i in 0..16 {
