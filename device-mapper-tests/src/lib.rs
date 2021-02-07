@@ -9,6 +9,7 @@ pub mod fs;
 pub mod io;
 pub mod kernel;
 pub mod blkdev;
+pub mod scenario;
 
 use std::time::Duration;
 use rand_name::rand_name;
