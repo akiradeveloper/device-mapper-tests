@@ -55,7 +55,6 @@ fn comipile_ruby() {
             options: Options::default().writeback_threshold(70).read_cache_threshold(31),
         };
         let wb = Writeboost::create(table);
-        XFS::format(&wb);
         let fs = XFS::new(&wb);
         let cr = CompileRuby { root: &fs.mount_point };
         cr.compile();
