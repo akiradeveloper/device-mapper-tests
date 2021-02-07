@@ -71,33 +71,24 @@ fn dbench() {
     let fast = env.alloc_device(Sector::MB(300));
     sweep_caches(&fast);
 
-    let options = vec![
-        "-t 60 1",
-        "-S -t 60 4",
-        "-s -t 60 4",
-    ];
-
-    for option in options {
-        let table = Table {
-            backing_dev: slow.path(),
-            cache_dev: fast.path(),
-            options: Options::default().writeback_threshold(70).read_cache_threshold(31),
-        };
-        let wb = Writeboost::create(table);
-        XFS::format(&wb);
-        let fs = XFS::new(&wb);
-        let pwd = &fs.mount_point;
-        proc_env_set!(PWD = pwd);
-        {
-            run_cmd!(dbench ${option}).unwrap();
-        }
+    let table = Table {
+        backing_dev: slow.path(),
+        cache_dev: fast.path(),
+        options: Options::default().writeback_threshold(70).read_cache_threshold(31),
+    };
+    let wb = Writeboost::create(table);
+    XFS::format(&wb);
+    let fs = XFS::new(&wb);
+    let pwd = &fs.mount_point;
+    proc_env_set!(PWD = pwd);
+    {
+        run_cmd!(dbench -t 60 1).unwrap();
     }
 }
 
 #[test]
 fn stress() {
     use fs::xfs::*;
-    use scenario::compile_ruby::*;
 
     let mut env = env();
     let slow = env.alloc_device(Sector::MB(1600));
