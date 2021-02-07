@@ -16,23 +16,17 @@ impl <'a> CompileRuby<'a> {
         let pwd = &self.root;
         let archive = self.archive_path();
         proc_env_set!(PWD = pwd);
-        {
-            run_cmd!(tar xvfz $archive).unwrap();
-        }
+        run_cmd!(tar xvfz $archive).unwrap();
     }
     pub fn compile(&self) {
         let pwd = format!("{}/ruby-2.7.2", self.root);
         proc_env_set!(PWD = pwd);
-        {
-            run_cmd!(./configure).unwrap();
-            run_cmd!(make).unwrap();
-        }
+        run_cmd!(./configure).unwrap();
+        run_cmd!(make).unwrap();
     }
     pub fn check(self) {
         let pwd = format!("{}/ruby-2.7.2", self.root);
         proc_env_set!(PWD = pwd);
-        {
-            run_cmd!(make test).unwrap();
-        }
+        run_cmd!(make test).unwrap();
     }
 }
