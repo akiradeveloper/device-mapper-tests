@@ -1,5 +1,5 @@
 use device_mapper_tests::*;
-use cmd_lib::{run_cmd, run_fun};
+use cmd_lib::*;
 
 #[test]
 fn test_kernel() {
@@ -101,11 +101,12 @@ fn test_xfs_prerequisite() {
 #[test]
 fn test_xfs() {
     use fs::xfs::*;
+    use scenario::many_files::*;
+
     let mut env = env();
-    let dev = env.alloc_device(Sector::MB(100));
+    let dev = env.alloc_device(Sector::MB(1000));
     XFS::format(&dev);
     let fs = XFS::new(&dev);
-    let fp = format!("{}/file", fs.mount_point);
-    run_cmd!(touch $fp).unwrap();
-    run_cmd!(rm $fp).unwrap();
+    let mf = ManyFiles { n: 100 };
+    mf.run_on(&fs.mount_point);
 }
