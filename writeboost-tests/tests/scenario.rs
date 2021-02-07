@@ -45,6 +45,7 @@ fn comipile_ruby() {
         cr.unarchive();
 
         kernel::drop_caches();
+        wb.drop_transient();
     }
 
     {
