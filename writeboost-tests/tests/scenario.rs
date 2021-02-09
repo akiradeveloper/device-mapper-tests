@@ -80,9 +80,13 @@ fn dbench() {
     XFS::format(&wb);
     let fs = XFS::new(&wb);
     let pwd = &fs.mount_point;
-    let option = "-t 60 1";
-    proc_env_set!(PWD = pwd);
-    {
+    let options = vec![
+        "-t 60 1",
+        "-S -t 60 4",
+        "-s -t 60 4",
+    ];
+    for option in options {
+        proc_env_set!(PWD = pwd);
         // We use run_cmd function instead of macro here
         // https://github.com/rust-shell-script/rust_cmd_lib/issues/17
         run_cmd(format!("dbench {}", option)).unwrap();
