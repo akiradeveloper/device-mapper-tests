@@ -106,7 +106,7 @@ fn read_caching_threshold_127_works() {
         on_buffer: false,
         full_size: true,
     };
-    let pat = PatternIO::new().max_io_amount(Sector::MB(16));
+    let pat = PatternIO::new().max_io_amount(Sector::MB(24));
     // Threshold works
     pat.submit(&rw, &pats);
 
@@ -117,8 +117,8 @@ fn read_caching_threshold_127_works() {
     pat.submit(&rw, &pats);
 
     let st = wb.status().stat;
-    // assert!(*st.get(&k).unwrap() < 200);
-    assert_eq!(*st.get(&k).unwrap(), 0);
+    assert!(*st.get(&k).unwrap() < 128);
+    // assert_eq!(*st.get(&k).unwrap(), 0);
 }
 
 #[test]
@@ -140,7 +140,7 @@ fn read_caching_threshold_1_works() {
     let rw = open(&wb);
     let pats = vec![
         Pattern::Read(Sector::KB(8)),
-        Pattern::Skip(Sector::KB(4)),
+        Pattern::Skip(Sector::KB(8)),
     ];
     let k = StatKey {
         write: false,
@@ -148,7 +148,7 @@ fn read_caching_threshold_1_works() {
         on_buffer: false,
         full_size: true,
     };
-    let pat = PatternIO::new().max_io_amount(Sector::MB(16));
+    let pat = PatternIO::new().max_io_amount(Sector::MB(24));
     // Threshold works
     pat.submit(&rw, &pats);
 
@@ -159,8 +159,8 @@ fn read_caching_threshold_1_works() {
     pat.submit(&rw, &pats);
 
     let st = wb.status().stat;
-    // assert!(*st.get(&k).unwrap() < 200);
-    assert_eq!(*st.get(&k).unwrap(), 0);
+    assert!(*st.get(&k).unwrap() < 2);
+    // assert_eq!(*st.get(&k).unwrap(), 0);
 }
 
 #[test]
