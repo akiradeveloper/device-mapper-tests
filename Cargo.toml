@@ -4,3 +4,7 @@ members = [
     "writeboost-tests",
     "wb-command-tests"
 ]
+
+[workspace.dependencies]
+cmd_lib = "0.9"
+tmp_env = "0.1.1"

@@ -1,21 +1,20 @@
 // #![feature(specialization)]
 
-mod sector;
-mod env;
-mod rand_name;
+pub mod blkdev;
 pub mod dm;
-pub mod stack;
+mod env;
 pub mod fs;
 pub mod io;
 pub mod kernel;
-pub mod blkdev;
+mod rand_name;
 pub mod scenario;
+mod sector;
+pub mod stack;
 
-use std::time::Duration;
-use rand_name::rand_name;
-pub use sector::Sector;
 pub use env::env;
 pub use io::open;
+use rand_name::rand_name;
+pub use sector::Sector;
 
 pub trait Stack {
     fn path(&self) -> String;
@@ -23,7 +22,7 @@ pub trait Stack {
 pub trait DMStack: Stack {
     fn dm(&self) -> &dm::State;
 }
-impl <T: DMStack> Stack for T {
+impl<T: DMStack> Stack for T {
     fn path(&self) -> String {
         self.dm().path()
     }
@@ -52,15 +51,13 @@ impl EmptyDMStack {
         let name = rand_name();
         let dm = dm::State::new(name);
         dm.create();
-        EmptyDMStack {
-            dm,
-        }
+        EmptyDMStack { dm }
     }
 }
 pub trait DMStackDecorator: DMStack {
-    fn delegate(&self) -> &DMStack;
+    fn delegate(&self) -> &dyn DMStack;
 }
-impl <T: DMStackDecorator> DMStack for T {
+impl<T: DMStackDecorator> DMStack for T {
     fn dm(&self) -> &dm::State {
         self.delegate().dm()
     }

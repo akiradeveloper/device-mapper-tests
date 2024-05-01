@@ -1,9 +1,9 @@
-use writeboost_tests::*;
 use device_mapper_tests::*;
+use writeboost_tests::*;
 
 #[test]
 fn read_caching_disabled() {
-    use io::pattern::{PatternIO, Pattern};
+    use io::pattern::{Pattern, PatternIO};
 
     let mut env = env();
     let slow = env.alloc_device(Sector::GB(1));
@@ -18,10 +18,7 @@ fn read_caching_disabled() {
     wb.clear_stat();
 
     let rw = open(&wb);
-    let pats = vec![
-        Pattern::Read(Sector::KB(4)),
-        Pattern::Skip(Sector::KB(4)),
-    ];
+    let pats = vec![Pattern::Read(Sector::KB(4)), Pattern::Skip(Sector::KB(4))];
     let k = StatKey {
         write: false,
         hit: true,
@@ -37,7 +34,7 @@ fn read_caching_disabled() {
 
 #[test]
 fn read_caching_enabled() {
-    use io::pattern::{PatternIO, Pattern};
+    use io::pattern::{Pattern, PatternIO};
 
     let mut env = env();
     let slow = env.alloc_device(Sector::GB(1));
@@ -52,10 +49,7 @@ fn read_caching_enabled() {
     wb.clear_stat();
 
     let rw = open(&wb);
-    let pats = vec![
-        Pattern::Read(Sector::KB(4)),
-        Pattern::Skip(Sector::KB(4)),
-    ];
+    let pats = vec![Pattern::Read(Sector::KB(4)), Pattern::Skip(Sector::KB(4))];
     let k = StatKey {
         write: false,
         hit: true,
@@ -66,7 +60,7 @@ fn read_caching_enabled() {
     // Staging
     pat.submit(&rw, &pats);
     let st = wb.status().stat;
-    assert_eq!(*st.get(&k).unwrap(), 0); 
+    assert_eq!(*st.get(&k).unwrap(), 0);
 
     // Drop RAM buffer
     wb.drop_transient();
@@ -76,12 +70,12 @@ fn read_caching_enabled() {
     pat.submit(&rw, &pats);
     let st = wb.status().stat;
     assert!(*st.get(&k).unwrap() > 0);
-    // assert_eq!(*st.get(&k).unwrap(), 2048); 
+    // assert_eq!(*st.get(&k).unwrap(), 2048);
 }
 
 #[test]
 fn read_caching_threshold_127_works() {
-    use io::pattern::{PatternIO, Pattern};
+    use io::pattern::{Pattern, PatternIO};
 
     let mut env = env();
     let slow = env.alloc_device(Sector::GB(1));
@@ -96,10 +90,7 @@ fn read_caching_threshold_127_works() {
     wb.clear_stat();
 
     let rw = open(&wb);
-    let pats = vec![
-        Pattern::Read(Sector::MB(1)),
-        Pattern::Skip(Sector::MB(1)),
-    ];
+    let pats = vec![Pattern::Read(Sector::MB(1)), Pattern::Skip(Sector::MB(1))];
     let k = StatKey {
         write: false,
         hit: true,
@@ -123,7 +114,7 @@ fn read_caching_threshold_127_works() {
 
 #[test]
 fn read_caching_threshold_1_works() {
-    use io::pattern::{PatternIO, Pattern};
+    use io::pattern::{Pattern, PatternIO};
 
     let mut env = env();
     let slow = env.alloc_device(Sector::GB(1));
@@ -138,10 +129,7 @@ fn read_caching_threshold_1_works() {
     wb.clear_stat();
 
     let rw = open(&wb);
-    let pats = vec![
-        Pattern::Read(Sector::KB(8)),
-        Pattern::Skip(Sector::KB(8)),
-    ];
+    let pats = vec![Pattern::Read(Sector::KB(8)), Pattern::Skip(Sector::KB(8))];
     let k = StatKey {
         write: false,
         hit: true,
@@ -165,7 +153,7 @@ fn read_caching_threshold_1_works() {
 
 #[test]
 fn read_caching_not_work_partial_read() {
-    use io::pattern::{PatternIO, Pattern};
+    use io::pattern::{Pattern, PatternIO};
 
     let mut env = env();
     let slow = env.alloc_device(Sector::GB(1));
@@ -177,28 +165,25 @@ fn read_caching_not_work_partial_read() {
         options: Options::default().read_cache_threshold(127),
     };
     let wb = Writeboost::create(table);
-    wb.clear_stat(); 
+    wb.clear_stat();
 
     let rw = open(&wb);
-    let pats = vec![
-        Pattern::Read(Sector::KB(3)),
-        Pattern::Skip(Sector::KB(5)),
-    ]; 
+    let pats = vec![Pattern::Read(Sector::KB(3)), Pattern::Skip(Sector::KB(5))];
     let pat = PatternIO::new().max_io_amount(Sector::MB(16));
-    pat.submit(&rw, &pats);    
+    pat.submit(&rw, &pats);
 
     wb.drop_transient();
     wb.clear_stat();
 
-    pat.submit(&rw, &pats);    
+    pat.submit(&rw, &pats);
 
-    let st = wb.status().stat; 
+    let st = wb.status().stat;
     // full read hit
     let k1 = StatKey {
         write: false,
         hit: true,
         on_buffer: false,
-        full_size: true, 
+        full_size: true,
     };
     assert_eq!(*st.get(&k1).unwrap(), 0);
 
@@ -207,7 +192,7 @@ fn read_caching_not_work_partial_read() {
         write: false,
         hit: true,
         on_buffer: false,
-        full_size: false, 
+        full_size: false,
     };
     assert_eq!(*st.get(&k2).unwrap(), 0);
 }

@@ -1,4 +1,4 @@
-use crate::{Sector, DMTable, DMStack, DMStackDecorator};
+use crate::{DMStack, DMStackDecorator, DMTable, Sector};
 
 pub struct Table {
     pub backing_dev: String,
@@ -7,15 +7,20 @@ pub struct Table {
 }
 impl DMTable for Table {
     fn line(&self) -> String {
-        format!("0 {} linear {} {}", self.len.sectors(), self.backing_dev, self.offset.sectors())
+        format!(
+            "0 {} linear {} {}",
+            self.len.sectors(),
+            self.backing_dev,
+            self.offset.sectors()
+        )
     }
 }
 pub struct Linear {
-    delegate: Box<DMStack>,
+    delegate: Box<dyn DMStack>,
     table: Table,
 }
 impl DMStackDecorator for Linear {
-    fn delegate(&self) -> &DMStack {
+    fn delegate(&self) -> &dyn DMStack {
         self.delegate.as_ref()
     }
 }

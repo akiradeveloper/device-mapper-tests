@@ -1,4 +1,4 @@
-use crate::{Stack, rand_name};
+use crate::{rand_name, Stack};
 use cmd_lib::run_cmd;
 
 pub mod xfs;

@@ -1,7 +1,7 @@
 use device_mapper_tests::*;
 
-use std::collections::{HashMap, VecDeque};
 use cmd_lib::run_cmd;
+use std::collections::{HashMap, VecDeque};
 
 pub fn sweep_caches(cache_dev: &impl Stack) {
     let path = cache_dev.path();
@@ -51,7 +51,7 @@ impl Options {
         if n == 0 {
             "".to_owned()
         } else {
-            let mut s = format!(" {}", n*2);
+            let mut s = format!(" {}", n * 2);
             for (k, v) in &self.m {
                 let kv = format!(" {} {}", k, v);
                 s.push_str(&kv);
@@ -72,7 +72,10 @@ impl DMTable for Table {
         let backing_dev = &self.backing_dev;
         let cache_dev = &self.cache_dev;
         let option_line = self.options.mk_line_repr();
-        format!("0 {} writeboost {} {}{}", sz, backing_dev, cache_dev, option_line)
+        format!(
+            "0 {} writeboost {} {}{}",
+            sz, backing_dev, cache_dev, option_line
+        )
     }
 }
 #[derive(Hash, Eq, Debug)]
@@ -91,9 +94,7 @@ impl PartialEq for StatKey {
 }
 impl StatKey {
     pub fn from_bits(mask: u8) -> Self {
-        let on = |shift: u8| {
-            (mask & (1<<shift)) != 0
-        };
+        let on = |shift: u8| (mask & (1 << shift)) != 0;
         StatKey {
             write: on(3),
             hit: on(2),

@@ -1,5 +1,4 @@
-use crate::{Stack, rand_name};
-use tempfile::{NamedTempFile, TempPath};
+use crate::{rand_name, Stack};
 use cmd_lib::run_cmd;
 use std::io::Write;
 
@@ -24,9 +23,7 @@ impl Luks {
         let key_file_path = key_file.into_temp_path();
         let key_file_path = key_file_path.display();
         run_cmd!(cryptsetup luksOpen $path $name --key-file=$key_file_path).unwrap();
-        Self {
-            name,
-        }
+        Self { name }
     }
 }
 impl Stack for Luks {
@@ -36,8 +33,6 @@ impl Stack for Luks {
 }
 impl Drop for Luks {
     fn drop(&mut self) {
-        use std::time::Duration;
-        
         let name = &self.name;
         // This looks like removing the device with --retry flag.
         run_cmd!(cryptsetup luksClose $name).unwrap();

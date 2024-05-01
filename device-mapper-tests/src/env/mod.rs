@@ -1,11 +1,9 @@
-use crate::{Stack, DMStack, Sector, EmptyDMStack};
+use crate::{Sector, Stack};
 
-use std::fs;
-
-mod pool;
 mod mem_blk;
+mod pool;
 
-use mem_blk::{MemBlkAllocator, MemBlk};
+use mem_blk::{MemBlk, MemBlkAllocator};
 use pool::DevicePool;
 
 pub struct Env {
@@ -28,7 +26,7 @@ impl Env {
     /// The total amount of memory is limited to 2GB.
     pub fn alloc_device(&mut self, len: Sector) -> impl Stack {
         self.pool.acquire(len)
-    } 
+    }
 }
 pub fn env() -> Env {
     Env::new()

@@ -1,6 +1,6 @@
-use crate::{Stack, Sector, DMStack, EmptyDMStack, blkdev};
-use std::collections::BTreeSet;
+use crate::{blkdev, DMStack, EmptyDMStack, Sector, Stack};
 use std::cmp::Ordering;
+use std::collections::BTreeSet;
 use std::sync::{Arc, Mutex};
 
 #[derive(Debug, Clone, Copy, Ord, Eq)]
@@ -20,9 +20,15 @@ impl PartialOrd for Range {
 }
 impl Range {
     fn split(self, len: Sector) -> (Range, Range) {
-        let a = Range { start: self.start, end: self.start+len };
-        let b = Range { start: a.end, end: self.end };
-        (a,b)
+        let a = Range {
+            start: self.start,
+            end: self.start + len,
+        };
+        let b = Range {
+            start: a.end,
+            end: self.end,
+        };
+        (a, b)
     }
     fn len(&self) -> Sector {
         self.end - self.start
@@ -34,10 +40,11 @@ struct Pool {
 impl Pool {
     fn new(start: Sector, len: Sector) -> Self {
         let mut m = BTreeSet::new();
-        m.insert(Range { start, end: start+len });
-        Self {
-            m
-        }
+        m.insert(Range {
+            start,
+            end: start + len,
+        });
+        Self { m }
     }
     fn acquire(&mut self, len: Sector) -> Option<Range> {
         let mut ret = None;
@@ -48,7 +55,7 @@ impl Pool {
         }
         if let Some(x) = ret {
             self.m.remove(&x);
-            let (a,b) = x.split(len);
+            let (a, b) = x.split(len);
             if b.len() > Sector(0) {
                 self.m.insert(b);
             }
@@ -76,8 +83,8 @@ fn merge(mut xs: Vec<Range>) -> Vec<Range> {
         let mut next = false;
 
         let n = xs.len();
-        for i in 0..n-1 {
-            let j = i+1;
+        for i in 0..n - 1 {
+            let j = i + 1;
             let a = xs[i];
             let b = xs[j];
             if a.end == b.start {
@@ -85,8 +92,11 @@ fn merge(mut xs: Vec<Range>) -> Vec<Range> {
                 for k in 0..i {
                     new_xs.push(xs[k]);
                 }
-                new_xs.push(Range { start: a.start, end: b.end });
-                for k in j+1..n {
+                new_xs.push(Range {
+                    start: a.start,
+                    end: b.end,
+                });
+                for k in j + 1..n {
                     new_xs.push(xs[k]);
                 }
                 xs = new_xs;
@@ -96,7 +106,7 @@ fn merge(mut xs: Vec<Range>) -> Vec<Range> {
         }
 
         if !next {
-            break
+            break;
         }
     }
     xs
@@ -137,7 +147,7 @@ impl DevicePool {
         let sz = blkdev::get_size(&path);
         Self {
             backing_dev: path.to_owned(),
-            pool: Arc::new(Mutex::new(Pool::new(Sector::GB(0), sz)))
+            pool: Arc::new(Mutex::new(Pool::new(Sector::GB(0), sz))),
         }
     }
     pub fn acquire(&mut self, len: Sector) -> impl Stack {
@@ -149,11 +159,15 @@ impl DevicePool {
             len,
         };
         let dm = crate::reload(dm, &table);
-        PoolLinear { dm: Box::new(dm), range, pool: Arc::clone(&self.pool) }
+        PoolLinear {
+            dm: Box::new(dm),
+            range,
+            pool: Arc::clone(&self.pool),
+        }
     }
 }
 pub struct PoolLinear {
-    dm: Box<DMStack>,
+    dm: Box<dyn DMStack>,
     range: Range,
     pool: Arc<Mutex<Pool>>,
 }

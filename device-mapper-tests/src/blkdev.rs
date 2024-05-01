@@ -1,5 +1,5 @@
-use cmd_lib::run_fun;
 use crate::Sector;
+use cmd_lib::run_fun;
 
 pub fn get_size(path: &str) -> Sector {
     let output = run_fun!(blockdev --getsize $path).unwrap();

@@ -1,7 +1,7 @@
 use crate::{Sector, Stack};
-use libc::{c_int, size_t, off64_t};
-use core::ffi::c_void;
 use cmd_lib::run_fun;
+use core::ffi::c_void;
+use libc::{c_int, off64_t, size_t};
 use std::ffi::CString;
 
 pub mod pattern;
@@ -21,9 +21,7 @@ impl OpenState {
             dbg!(std::io::Error::last_os_error());
         }
         assert!(fd >= 0);
-        Self {
-            fd,
-        }
+        Self { fd }
     }
     pub fn write(&self, buf: &[u8], offset: Sector, cnt: Sector) {
         let p = unsafe { std::mem::transmute::<*const u8, *const c_void>(buf.as_ptr()) };

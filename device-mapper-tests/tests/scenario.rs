@@ -9,7 +9,9 @@ fn test_compile_ruby_scenario() {
     let dev = env.alloc_device(Sector::MB(1600));
     XFS::format(&dev);
     let fs = XFS::new(&dev);
-    let cr = CompileRuby { root: &fs.mount_point };
+    let cr = CompileRuby {
+        root: &fs.mount_point,
+    };
     cr.download();
     cr.unarchive();
     cr.compile();
