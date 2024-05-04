@@ -1,0 +1,31 @@
+name: Self Test
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  run_tests:
+    name: Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Install dependencies
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: cargo cryptsetup xfs xfsprogs
+          version: 1.0
+
+      - name: Check cryptsetup enabled
+        run: cryptsetup benchmark -c aes-xts-plain64 -s 512
+
+      - name: Checkout device-mapper-tests
+        uses: actions/checkout@v4
+        with:
+          repository: akiradeveloper/device-mapper-tests
+          ref: bump
+          path: tests
+
+      - name: Test
+        working-directory: tests/device-mapper-tests
+        run: sudo make test
