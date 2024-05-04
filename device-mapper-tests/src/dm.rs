@@ -1,8 +1,7 @@
-use std::process::Command;
+use crate::Sector;
+use cmd_lib::{run_cmd, run_fun};
 use std::io::Write;
 use std::str::FromStr;
-use cmd_lib::{run_cmd, run_fun};
-use crate::Sector;
 
 pub struct Table {
     pub start: Sector,
@@ -21,7 +20,12 @@ impl FromStr for Table {
         for &x in &xs[3..] {
             args.push(x.to_owned())
         }
-        Ok(Table { start, len, target, args, })
+        Ok(Table {
+            start,
+            len,
+            target,
+            args,
+        })
     }
 }
 pub struct Status {
@@ -41,7 +45,12 @@ impl FromStr for Status {
         for &x in &xs[3..] {
             args.push(x.to_owned())
         }
-        Ok(Status { start, len, target, args, })
+        Ok(Status {
+            start,
+            len,
+            target,
+            args,
+        })
     }
 }
 pub struct State {
@@ -49,20 +58,16 @@ pub struct State {
 }
 impl State {
     pub fn new(name: String) -> Self {
-        State {
-            name,
-        }
+        State { name }
     }
     pub fn path(&self) -> String {
         format!("/dev/mapper/{}", self.name)
     }
-    pub fn create(&self) { 
+    pub fn create(&self) {
         let name = &self.name;
         run_cmd!(dmsetup create $name --notable).unwrap();
     }
     pub fn remove(&self) {
-        use std::time::Duration;
-
         let name = &self.name;
         // Removing device often fails due to resource busy.
         // The reason is not sure but it may be because the close is a bit lazy.

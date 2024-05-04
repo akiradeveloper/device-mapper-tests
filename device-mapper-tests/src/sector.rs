@@ -7,10 +7,10 @@ impl Sector {
         Sector(2 * n)
     }
     pub fn MB(n: u64) -> Sector {
-        Sector((2<<10) * n)
+        Sector((2 << 10) * n)
     }
     pub fn GB(n: u64) -> Sector {
-        Sector((2<<20) * n)
+        Sector((2 << 20) * n)
     }
     pub fn bytes(&self) -> u64 {
         self.0 << 9

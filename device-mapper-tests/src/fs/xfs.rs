@@ -1,6 +1,6 @@
+use super::*;
 use crate::Stack;
 use cmd_lib::run_cmd;
-use super::*;
 
 impl XFS {
     pub fn format(s: &impl Stack) {

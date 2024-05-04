@@ -21,8 +21,8 @@ fn test_recreate() {
     let slow = env.alloc_device(Sector::MB(50));
     let p2 = slow.path();
     run_cmd!(wbcreate wbdev $p1 $p2 --reformat).unwrap();
-    run_cmd!(wbremove wbdev).unwrap(); 
-    
+    run_cmd!(wbremove wbdev).unwrap();
+
     run_cmd!(wbcreate wbdev $p1 $p2).unwrap();
     run_cmd!(dd if=/dev/zero of=/dev/mapper/wbdev oflag=direct bs=1M count=50).unwrap();
     run_cmd!(wbremove wbdev).unwrap();
@@ -36,7 +36,7 @@ fn test_wbremove() {
     let slow = env.alloc_device(Sector::MB(50));
     let p2 = slow.path();
     run_cmd!(wbcreate wbdev $p1 $p2 --reformat).unwrap();
-    run_cmd!(wbremove wbdev --noflush --nowriteback).unwrap(); 
+    run_cmd!(wbremove wbdev --noflush --nowriteback).unwrap();
 }
 
 #[test]
@@ -51,7 +51,7 @@ fn test_wbcheck() {
 
     run_cmd!(wbcheck $p2 1);
 
-    run_cmd!(wbremove wbdev --nowriteback); 
+    run_cmd!(wbremove wbdev --nowriteback);
 }
 
 #[test]
@@ -66,7 +66,7 @@ fn test_wbdump() {
 
     run_cmd!(wbdump $p2 1).unwrap();
 
-    run_cmd!(wbremove wbdev).unwrap(); 
+    run_cmd!(wbremove wbdev).unwrap();
 }
 
 #[test]
@@ -82,7 +82,7 @@ fn test_wbmeta() {
     run_cmd!(wbmeta $p2 0).unwrap();
     run_cmd!(wbmeta $p2 1).unwrap();
 
-    run_cmd!(wbremove wbdev).unwrap(); 
+    run_cmd!(wbremove wbdev).unwrap();
 }
 
 #[test]
@@ -97,5 +97,5 @@ fn test_wbstatus() {
 
     run_cmd!(dmsetup status wbdev | wbstatus).unwrap();
 
-    run_cmd!(wbremove wbdev --nowriteback).unwrap(); 
+    run_cmd!(wbremove wbdev --nowriteback).unwrap();
 }

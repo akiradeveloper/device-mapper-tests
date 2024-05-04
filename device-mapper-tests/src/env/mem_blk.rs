@@ -1,5 +1,5 @@
-use crate::{Stack, Sector};
-use cmd_lib::{run_fun, run_cmd};
+use crate::Stack;
+use cmd_lib::{run_cmd, run_fun};
 
 pub struct MemBlk {
     path: String,
@@ -9,13 +9,12 @@ impl MemBlk {
     pub fn new(env: &mut MemBlkAllocator, mb: u64) -> Self {
         let path = env.alloc();
         run_cmd!(dd status=none if=/dev/zero of=$path bs=1M count=$mb).unwrap();
+        // We have to skip fmt here because rustfmt makes it `losetup - f` which is invalid.
+        #[rustfmt::skip]
         let loop_device = run_fun!(losetup -f).unwrap();
         run_cmd!(losetup --sector-size=512 $loop_device $path).unwrap();
         dbg!(run_fun!(blockdev --getss $loop_device));
-        Self {
-            path,
-            loop_device,
-        }
+        Self { path, loop_device }
     }
 }
 impl Stack for MemBlk {
@@ -25,8 +24,6 @@ impl Stack for MemBlk {
 }
 impl Drop for MemBlk {
     fn drop(&mut self) {
-        use std::time::Duration;
-        
         let loop_device = &self.loop_device;
         let path = &self.path;
         run_cmd!(losetup -d $loop_device).unwrap();
@@ -43,9 +40,7 @@ impl MemBlkAllocator {
         // -p: no error if existing
         run_cmd!(mkdir -p ${POOL_DIR}).unwrap();
         run_cmd!(mount -t ramfs -o size=2g ramfs ${POOL_DIR}).unwrap();
-        Self {
-            i: 0,
-        }
+        Self { i: 0 }
     }
     fn alloc(&mut self) -> String {
         let path = format!("{}/{}", POOL_DIR, self.i);

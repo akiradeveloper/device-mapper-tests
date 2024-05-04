@@ -1,5 +1,5 @@
-use device_mapper_tests::*;
 use cmd_lib::*;
+use device_mapper_tests::*;
 
 #[test]
 fn test_kernel() {
@@ -9,9 +9,9 @@ fn test_kernel() {
 fn test_sector() {
     let x = Sector::MB(5);
     let y = Sector::MB(3);
-    assert_eq!(x+y, Sector::MB(8));
-    assert_eq!(x-y, Sector::KB(2048));
-    assert_eq!(x*4, Sector::MB(20));
+    assert_eq!(x + y, Sector::MB(8));
+    assert_eq!(x - y, Sector::KB(2048));
+    assert_eq!(x * 4, Sector::MB(20));
 }
 #[test]
 fn test_mem_pool() {
@@ -36,7 +36,7 @@ fn test_mem_rw() {
 }
 #[test]
 fn test_pattern_io() {
-    use io::pattern::{PatternIO, Pattern};
+    use io::pattern::{Pattern, PatternIO};
     let mut env = env();
     let dev = env.alloc_device(Sector::GB(1));
     let rw = open(&dev);
@@ -61,7 +61,7 @@ fn test_linear() {
         len: Sector::MB(40),
     };
     let linear = Linear::new(dm, tab);
-    let sz = blkdev::get_size(&linear.path()); 
+    let sz = blkdev::get_size(&linear.path());
     assert_eq!(sz, Sector::MB(40));
     io::test_blk_rw(&linear, Sector::KB(1), Sector(1));
 }

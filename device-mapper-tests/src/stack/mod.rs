@@ -1,15 +1,13 @@
 // #![feature(specialization)]
 
-use crate::{DMTable, Stack, DMStack, DMStackDecorator};
-use crate::Sector;
-use std::path::PathBuf;
+use crate::Stack;
 
-pub mod linear;
 pub mod flakey;
+pub mod linear;
 pub mod luks;
 
 struct RawBlk {
-    path: String
+    path: String,
 }
 impl Stack for RawBlk {
     fn path(&self) -> String {

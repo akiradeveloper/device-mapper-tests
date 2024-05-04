@@ -1,5 +1,5 @@
-use writeboost_tests::*;
 use device_mapper_tests::*;
+use writeboost_tests::*;
 
 // - drop_transient changes the stat as well as dm-create.
 #[test]

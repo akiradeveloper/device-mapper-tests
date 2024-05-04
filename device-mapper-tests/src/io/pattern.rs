@@ -1,6 +1,6 @@
-use std::time::{Instant, Duration};
-use crate::Sector;
 use super::*;
+use crate::Sector;
+use std::time::{Duration, Instant};
 
 pub enum Pattern {
     Skip(Sector),
@@ -43,14 +43,12 @@ impl PatternIO {
             use Pattern::*;
             for pat in pats {
                 let l = match pat {
-                    Skip(l) => {
-                        l
-                    },
+                    Skip(l) => l,
                     Write(l) => {
                         let buf = super::buf(&vec![0xFF; l.bytes() as usize]);
                         rw.write(&buf, cur, *l);
                         l
-                    },
+                    }
                     Read(l) => {
                         let mut buf = super::buf(&vec![0; l.bytes() as usize]);
                         rw.read(&mut buf, cur, *l);
